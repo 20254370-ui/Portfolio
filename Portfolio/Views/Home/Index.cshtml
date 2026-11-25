@@ -1,8 +1,53 @@
-﻿@{
-    ViewData["Title"] = "Home Page";
+﻿@model HomeViewModel
+@{
+    ViewData["Title"] = "Home";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+<div class="p-5 mb-4 bg-primary text-white rounded-4">
+    <p class="small text-uppercase mb-1">BSIT · University of Baguio</p>
+    <h1 class="display-5 fw-bold">Kathleen Garcia</h1>
+    <p class="lead mb-0">The projects I made in my courses, from my first program to this website.</p>
 </div>
+
+@if (Model.Courses.Count == 0)
+{
+    <p class="text-muted">No courses yet.</p>
+}
+
+@foreach (var course in Model.Courses)
+{
+    var projects = Model.Projects.Where(p => p.CourseId == course.CourseId).ToList();
+
+    <h2 class="h4 mt-4">
+        <span class="text-primary">@course.Code</span> @course.Title
+        <small class="text-muted fs-6">@course.SchoolYear, @course.Semester</small>
+    </h2>
+
+    if (projects.Count == 0)
+    {
+        <p class="text-muted">No projects yet.</p>
+    }
+    else
+    {
+        <div class="row g-3">
+            @foreach (var project in projects)
+            {
+                <div class="col-md-4">
+                    <a asp-action="Details" asp-route-id="@project.ProjectId" class="text-decoration-none text-reset">
+                        <div class="card h-100 shadow-sm">
+                            @if (project.CoverUrl != null)
+                            {
+                                <img src="@project.CoverUrl" class="card-img-top" alt="@project.Title" style="height:180px;object-fit:cover" />
+                            }
+                            <div class="card-body">
+                                <h3 class="h5">@project.Title</h3>
+                                <p class="text-muted small">@project.Summary</p>
+                                <p class="small mb-0">@project.ImageCount images@(project.VideoUrl != null ? " · video" : "")</p>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+            }
+        </div>
+    }
+}

@@ -1,0 +1,40 @@
+﻿@model Project
+@{
+    ViewData["Title"] = Model.Title;
+    var videoId = System.Text.RegularExpressions.Regex.Match(Model.VideoUrl ?? "", @"(?:v=|youtu\.be/|shorts/)([A-Za-z0-9_-]{11})").Groups[1].Value;
+}
+
+<a asp-action="Index" class="text-decoration-none">← All projects</a>
+
+<p class="mt-3 mb-0">
+    <span class="fw-bold text-primary">@Model.CourseCode</span>
+    <span class="text-muted">@Model.CourseTitle</span>
+</p>
+<h1>@Model.Title</h1>
+<p class="lead">@Model.Summary</p>
+
+@if (Model.CompletedOn != null)
+{
+    <p class="text-muted small">Completed @Model.CompletedOn.Value.ToString("MMMM d, yyyy")</p>
+}
+
+@if (videoId != "")
+{
+    <div class="my-4">
+        <iframe width="560" height="315" src="https://www.youtube.com/embed/@videoId" title="Project demo" allowfullscreen></iframe>
+    </div>
+}
+
+@if (Model.Images.Count > 0)
+{
+    <div class="row g-3 mt-2">
+        @foreach (var url in Model.Images)
+        {
+            <div class="col-md-4">
+                <div class="card p-2">
+                    <img src="@url" class="img-fluid rounded" alt="@Model.Title" />
+                </div>
+            </div>
+        }
+    </div>
+}

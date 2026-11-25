@@ -1,25 +1,48 @@
 using Microsoft.AspNetCore.Mvc;
+using Portfolio.Data;
 using Portfolio.Models;
-using System.Diagnostics;
 
-namespace Portfolio.Controllers
+namespace Portfolio.Controllers;
+
+public class HomeController : Controller
 {
-    public class HomeController : Controller
+    private readonly CourseRepository _courses;
+    private readonly ProjectRepository _projects;
+    private readonly ProjectImageRepository _images;
+
+    public HomeController(CourseRepository courses, ProjectRepository projects, ProjectImageRepository images)
     {
-        public IActionResult Index()
+        _courses = courses;
+        _projects = projects;
+        _images = images;
+    }
+
+    public async Task<IActionResult> Index()
+    {
+        var model = new HomeViewModel
         {
-            return View();
+            Courses = await _courses.GetAllAsync(),
+            Projects = await _projects.GetAllAsync()
+        };
+
+        return View(model);
+    }
+
+    public async Task<IActionResult> Details(long id)
+    {
+        var project = await _projects.GetByIdAsync(id);
+        if (project == null)
+        {
+            return NotFound();
         }
 
-        public IActionResult Privacy()
-        {
-            return View();
-        }
+        project.Images = await _images.GetUrlsAsync(id);
+        return View(project);
+    }
 
-        [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
-        public IActionResult Error()
-        {
-            return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
-        }
+    [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
+    public IActionResult Error()
+    {
+        return View(new ErrorViewModel { RequestId = System.Diagnostics.Activity.Current?.Id ?? HttpContext.TraceIdentifier });
     }
 }
