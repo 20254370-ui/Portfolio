@@ -1,7 +1,20 @@
+using Npgsql;
+using Portfolio.Data;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
+var connectionString = builder.Configuration.GetConnectionString("Portfolio");
+if (string.IsNullOrWhiteSpace(connectionString))
+{
+    throw new InvalidOperationException("Connection string 'Portfolio' is missing. Add it in Manage User Secrets.");
+}
+
+var dataSource = NpgsqlDataSource.Create(connectionString);
+builder.Services.AddSingleton(dataSource);
+builder.Services.AddScoped<CourseRepository>();
+builder.Services.AddScoped<ProjectRepository>();
+builder.Services.AddScoped<ProjectImageRepository>();
 
 var app = builder.Build();
 
