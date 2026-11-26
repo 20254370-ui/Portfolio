@@ -1,4 +1,8 @@
-﻿<!DOCTYPE html>
+﻿@{
+    var controller = ViewContext.RouteData.Values["controller"]?.ToString();
+    var editing = controller == "Courses" || controller == "Projects";
+}
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8" />
@@ -12,7 +16,19 @@
         <nav class="navbar navbar-dark bg-dark mb-4">
             <div class="container">
                 <a class="navbar-brand fw-bold" asp-controller="Home" asp-action="Index">Portfolio</a>
-                <a class="btn btn-outline-light btn-sm" asp-controller="Courses" asp-action="Index">Edit portfolio</a>
+                <div class="d-flex align-items-center gap-3">
+                    @if (editing)
+                    {
+                        <span class="badge text-bg-warning">Editor</span>
+                        <a class="text-white text-decoration-none" asp-controller="Courses" asp-action="Index">Courses</a>
+                        <a class="text-white text-decoration-none" asp-controller="Projects" asp-action="Index">Projects</a>
+                        <a class="btn btn-outline-light btn-sm" asp-controller="Home" asp-action="Index">View portfolio</a>
+                    }
+                    else
+                    {
+                        <a class="btn btn-outline-light btn-sm" asp-controller="Courses" asp-action="Index">Edit portfolio</a>
+                    }
+                </div>
             </div>
         </nav>
     </header>
